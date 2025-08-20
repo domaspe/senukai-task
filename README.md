@@ -17,7 +17,7 @@ A NestJS backend project for managing a shopping cart with promotions. Includes 
 ### Setup
 
 ```sh
-cp -n .env.example .env   # Creates .env file from `.env.example`
+cp -n .env.example .env   # Creates .env file from .env.example
 npm install
 docker-compose up -d
 ```
