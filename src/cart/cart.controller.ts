@@ -10,6 +10,12 @@ import { UpdateCartItemDto } from './dto/update-cart-item.dto';
 export class CartController {
   constructor(private readonly cartService: CartService) {}
 
+  @Post()
+  @ApiOperation({ summary: 'Create cart' })
+  async createCart() {
+    return this.cartService.createCart();
+  }
+
   @Post(':cartId/items')
   @ApiOperation({ summary: 'Add item to cart' })
   @ApiResponse({ status: 201, description: 'Item added to cart', type: CartItem })
@@ -47,11 +53,5 @@ export class CartController {
   async deleteCart(@Param('cartId', ParseIntPipe) cartId: number): Promise<{ message: string }> {
     await this.cartService.deleteCart(cartId);
     return { message: 'Cart deleted' };
-  }
-
-  @Post()
-  @ApiOperation({ summary: 'Create cart' })
-  async createCart() {
-    return this.cartService.createCart();
   }
 }
