@@ -37,24 +37,34 @@ Starts NestJS in development mode, automatically runs `docker-compose` and appli
 - `src/database/migrations/` - Migrations and seed data
 
 
-## API Usage & Endpoints
+## Products
 
-### Products
 The following products are available (with their IDs):
 
-| Product ID | Name        | Price  | Promotion                |
-|------------|-------------|--------|--------------------------|
-| 1          | Plaktukas   | 9.99   | None                     |
-| 2          | Atsuktuvas  | 4.99   | Buy One Get One Free     |
-| 3          | Grąžtas     | 49.99  | None                     |
-| 4          | Pjūklas     | 24.99  | None                     |
-| 5          | Replės      | 7.99   | None                     |
+| Product ID | Name        | Price  | Promotion                                        |
+|------------|-------------|--------|--------------------------------------------------|
+| 1          | Plaktukas   | 9.99   | None                                             |
+| 2          | Atsuktuvas  | 4.99   | Perki vieną, antrą gauni nemokamai - Atsuktuvas  |
+| 3          | Grąžtas     | 49.99  | None                                             |
+| 4          | Pjūklas     | 24.99  | None                                             |
+| 5          | Replės      | 7.99   | None                                             |
 
-**Promotions:**
-- **Buy One Get One Free**: Applies to Atsuktuvas (ID: 2). Add two or more to cart to get every second one free.
-- **10% Discount**: Applies to the whole cart if the total (before discount) is over 75€.
+## Promotion System
 
-### Example Usage
+### Promotion Levels
+
+The promotion system operates on two distinct levels with a specific application order:
+
+#### Item-Level Promotions
+- **Applied first** to individual products (Perki vieną, antrą gauni nemokamai - Atsuktuvas)
+- Modify the price of specific items in the cart
+
+#### Cart-Level Promotions  
+- **Applied second** to the entire cart total (10% nuolaida užsakymams virš 75€)
+- Calculate discounts based on the **already discounted** cart total from item-level promotions
+
+
+## Example Usage
 
 1. **Create a cart:**
    

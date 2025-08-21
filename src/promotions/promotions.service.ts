@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Promotion } from '../database/entities/promotion.entity';
 import { CartItem } from '../database/entities/cart-item.entity';
+import { Promotion, PromotionLevel } from '../database/entities/promotion.entity';
 import { PromotionStrategyService } from './promotion-strategy.service';
+import { DiscountedItem } from './strategies/promotion-strategy.abstract';
 
 export type PromotionCalculation = {
   discountAmount: number;
@@ -25,18 +26,86 @@ export class PromotionsService {
 
   async calculatePromotions(cartItems: CartItem[]): Promise<PromotionCalculation> {
     const promotions = await this.promotionRepository.find();
-    let totalDiscountAmount = 0;
-    const appliedPromotions: AppliedPromotion[] = [];
+
+    const promotionsByLevel = this.groupPromotionsByLevel(promotions);
+    const itemLevelPromotions = promotionsByLevel.get(PromotionLevel.Item) || [];
+    const cartLevelPromotions = promotionsByLevel.get(PromotionLevel.Cart) || [];
+
+    const initialDiscountedItems = cartItems.map((item) => ({ ...item }) satisfies DiscountedItem);
+
+    const itemPromotions = this.applyItemLevelPromotions(initialDiscountedItems, itemLevelPromotions);
+
+    const cartPromotions = this.applyCartLevelPromotions(itemPromotions.discountedItems, cartLevelPromotions);
+
+    const allAppliedPromotions = [...itemPromotions.appliedPromotions, ...cartPromotions];
+
+    return {
+      discountAmount: allAppliedPromotions.reduce((sum, promo) => sum + promo.discountAmount, 0),
+      appliedPromotions: allAppliedPromotions,
+    };
+  }
+
+  private groupPromotionsByLevel(promotions: Promotion[]): Map<PromotionLevel, Promotion[]> {
+    const grouped = new Map<PromotionLevel, Promotion[]>();
 
     for (const promotion of promotions) {
+      const strategy = this.promotionStrategyService.getStrategy(promotion.type);
+
+      if (!grouped.has(strategy.level)) {
+        grouped.set(strategy.level, []);
+      }
+
+      grouped.get(strategy.level)!.push(promotion);
+    }
+
+    return grouped;
+  }
+
+  private applyItemLevelPromotions(
+    discountedItems: DiscountedItem[],
+    itemLevelPromotions: Promotion[],
+  ): { discountedItems: DiscountedItem[]; appliedPromotions: AppliedPromotion[] } {
+    let currentDiscountedItems = discountedItems;
+    const appliedPromotions: AppliedPromotion[] = [];
+
+    for (const promotion of itemLevelPromotions) {
       try {
         const strategy = this.promotionStrategyService.getStrategy(promotion.type);
 
-        if (strategy.isApplicable(cartItems, promotion)) {
-          const result = strategy.apply(cartItems, promotion);
+        if (strategy.isApplicable(currentDiscountedItems, promotion)) {
+          const { discountAmount, discountedItems: modifiedItems } = strategy.apply(currentDiscountedItems, promotion);
+
+          if (discountAmount > 0) {
+            appliedPromotions.push({
+              name: promotion.name,
+              discountAmount,
+            });
+          }
+
+          currentDiscountedItems = modifiedItems;
+        }
+      } catch (error) {
+        console.warn(`Failed to apply item promotion ${promotion.name}:`, error.message);
+      }
+    }
+
+    return { discountedItems: currentDiscountedItems, appliedPromotions };
+  }
+
+  private applyCartLevelPromotions(
+    discountedItems: DiscountedItem[],
+    cartLevelPromotions: Promotion[],
+  ): AppliedPromotion[] {
+    const appliedPromotions: AppliedPromotion[] = [];
+
+    for (const promotion of cartLevelPromotions) {
+      try {
+        const strategy = this.promotionStrategyService.getStrategy(promotion.type);
+
+        if (strategy.isApplicable(discountedItems, promotion)) {
+          const result = strategy.apply(discountedItems, promotion);
 
           if (result.discountAmount > 0) {
-            totalDiscountAmount += result.discountAmount;
             appliedPromotions.push({
               name: promotion.name,
               discountAmount: result.discountAmount,
@@ -44,13 +113,10 @@ export class PromotionsService {
           }
         }
       } catch (error) {
-        console.warn(`Failed to apply promotion ${promotion.name}:`, error.message);
+        console.warn(`Failed to apply cart promotion ${promotion.name}:`, error.message);
       }
     }
 
-    return {
-      discountAmount: totalDiscountAmount,
-      appliedPromotions,
-    };
+    return appliedPromotions;
   }
 }

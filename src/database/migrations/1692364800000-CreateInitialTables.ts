@@ -45,7 +45,7 @@ export class CreateInitialTables1692364800000 implements MigrationInterface {
       `);
 
     await queryRunner.query(`
-      ALTER TABLE promotions ADD CONSTRAINT products_FK_promotions 
+      ALTER TABLE promotions ADD CONSTRAINT promotions_products_FK 
       FOREIGN KEY (productId) REFERENCES products(id) ON DELETE CASCADE;
     `);
 
@@ -60,14 +60,14 @@ export class CreateInitialTables1692364800000 implements MigrationInterface {
     `);
 
     await queryRunner.query(`
-      CREATE INDEX IX_cart_items_cartId ON cart_items (cartId)
+      CREATE INDEX cart_items_cartId_IX ON cart_items (cartId)
     `);
 
     await queryRunner.query(`
-      CREATE INDEX IX_cart_items_productId ON cart_items (productId)
+      CREATE INDEX cart_items_productId_IX ON cart_items (productId)
     `);
     await queryRunner.query(`
-      CREATE INDEX IX_promotions_type ON promotions (type)
+      CREATE INDEX promotions_type_IX ON promotions (type)
     `);
 
     await queryRunner.query(`
@@ -79,11 +79,11 @@ export class CreateInitialTables1692364800000 implements MigrationInterface {
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`ALTER TABLE cart_items DROP CONSTRAINT cart_items_productId_FK`);
     await queryRunner.query(`ALTER TABLE cart_items DROP CONSTRAINT cart_items_cartId_FK`);
+    await queryRunner.query(`ALTER TABLE promotions DROP CONSTRAINT promotions_products_FK`);
 
-    await queryRunner.query(`DROP INDEX IX_promotions_type ON promotions`);
-    await queryRunner.query(`DROP INDEX IX_promotions_active ON promotions`);
-    await queryRunner.query(`DROP INDEX IX_cart_items_productId ON cart_items`);
-    await queryRunner.query(`DROP INDEX IX_cart_items_cartId ON cart_items`);
+    await queryRunner.query(`DROP INDEX promotions_type_IX ON promotions`);
+    await queryRunner.query(`DROP INDEX cart_items_productId_IX ON cart_items`);
+    await queryRunner.query(`DROP INDEX cart_items_cartId_IX ON cart_items`);
 
     await queryRunner.query(`DROP TABLE promotions`);
     await queryRunner.query(`DROP TABLE cart_items`);

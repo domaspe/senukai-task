@@ -7,9 +7,10 @@ import { PromotionsService, PromotionCalculation } from '../promotions/promotion
 import { AddToCartDto } from './dto/add-to-cart.dto';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
 import { Product } from 'src/database/entities/product.entity';
+import { PromotionLevel } from 'src/database/entities/promotion.entity';
 import { roundMoney } from 'src/utils';
 
-export type CartTotal = PromotionCalculation & {
+export type CartTotal = Omit<PromotionCalculation, 'itemsAfterItemPromotions'> & {
   items: CartItem[];
   subtotal: number;
   total: number;
@@ -100,14 +101,16 @@ export class CartService {
       throw new NotFoundException('Cart not found');
     }
 
-    const subtotal = roundMoney(cart.items.reduce((sum, item) => sum + item.totalPrice, 0));
+    const originalSubtotal = roundMoney(cart.items.reduce((sum, item) => sum + item.totalPrice, 0));
+
     const promotions = await this.promotionsService.calculatePromotions(cart.items);
 
     return {
       items: cart.items,
-      subtotal,
-      total: Math.max(subtotal - promotions.discountAmount, 0),
-      ...promotions,
+      subtotal: originalSubtotal,
+      total: roundMoney(Math.max(originalSubtotal - promotions.discountAmount, 0)),
+      discountAmount: promotions.discountAmount,
+      appliedPromotions: promotions.appliedPromotions,
     };
   }
 

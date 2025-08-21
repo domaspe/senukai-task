@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PromotionsService } from './promotions.service';
 import { Promotion } from '../database/entities/promotion.entity';
 import { PromotionStrategyService } from './promotion-strategy.service';
+import { PromotionsService } from './promotions.service';
 import { BuyOneGetOneStrategy } from './strategies/buy-one-get-one.strategy';
 import { PercentageDiscountStrategy } from './strategies/percentage-discount.strategy';
 

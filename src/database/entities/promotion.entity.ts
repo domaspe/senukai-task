@@ -5,6 +5,11 @@ export enum PromotionType {
   PercentageDiscount = 'PercentageDiscount',
 }
 
+export enum PromotionLevel {
+  Item = 'Item',
+  Cart = 'Cart',
+}
+
 @Entity('promotions')
 export class Promotion {
   @PrimaryGeneratedColumn()

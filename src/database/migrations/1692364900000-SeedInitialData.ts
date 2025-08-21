@@ -4,7 +4,6 @@ export class SeedInitialData1692364900000 implements MigrationInterface {
   name = 'SeedInitialData1692364900000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Insert products
     await queryRunner.query(`
       INSERT INTO products (title, price) VALUES
       (N'Plaktukas', 9.99),
@@ -14,7 +13,6 @@ export class SeedInitialData1692364900000 implements MigrationInterface {
       (N'Replės', 7.99)
     `);
 
-    // Insert promotions with explicit columns
     await queryRunner.query(`
       INSERT INTO promotions (name, type, productId, discountValue, minimumOrderValue) VALUES
       (N'Perki vieną, antrą gauni nemokamai - Atsuktuvas', 'BuyOneGetOne', 2, NULL, NULL)

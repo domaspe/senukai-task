@@ -1,26 +1,41 @@
 import { Injectable } from '@nestjs/common';
-import { PromotionStrategy, PromotionResult } from './promotion-strategy.abstract';
-import { CartItem } from '../../database/entities/cart-item.entity';
-import { Promotion } from '../../database/entities/promotion.entity';
 import { roundMoney } from 'src/utils';
+import { Promotion, PromotionLevel } from '../../database/entities/promotion.entity';
+import { DiscountedItem, PromotionResult, PromotionStrategy } from './promotion-strategy.abstract';
 
 @Injectable()
 export class BuyOneGetOneStrategy extends PromotionStrategy {
-  apply(cartItems: CartItem[], promotion: Promotion): PromotionResult {
-    const targetItem = cartItems.find((item) => item.productId === promotion.productId);
+  level = PromotionLevel.Item;
+
+  apply(discountedItems: DiscountedItem[], promotion: Promotion): PromotionResult {
+    const targetItem = discountedItems.find((item) => item.productId === promotion.productId);
 
     if (!targetItem) {
-      return { discountAmount: 0 };
+      return { discountAmount: 0, discountedItems };
     }
 
     const freeItems = Math.floor(targetItem.quantity / 2);
     const discountAmount = roundMoney(freeItems * targetItem.unitPrice);
 
-    return { discountAmount };
+    if (discountAmount > 0) {
+      return {
+        discountAmount,
+        discountedItems: discountedItems.map((item) => ({
+          ...item,
+          totalPrice:
+            item.productId === promotion.productId ? Math.max(item.totalPrice - discountAmount, 0) : item.totalPrice,
+        })),
+      };
+    }
+
+    return {
+      discountAmount,
+      discountedItems,
+    };
   }
 
-  isApplicable(cartItems: CartItem[], promotion: Promotion): boolean {
-    const targetItem = cartItems.find((item) => item.productId === promotion.productId);
+  isApplicable(discountedItems: DiscountedItem[], promotion: Promotion): boolean {
+    const targetItem = discountedItems.find((item) => item.productId === promotion.productId);
     return !!targetItem && targetItem.quantity >= 2;
   }
 }
