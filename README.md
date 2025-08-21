@@ -30,7 +30,7 @@ npm run start:dev
 
 Starts NestJS in development mode, automatically runs `docker-compose` and applies database migrations
 
-## Project Structure
+## Project structure
 - `src/cart/` — Cart logic
 - `src/promotions/` — Promotion strategies
 - `src/database/entities/` — TypeORM entities
@@ -55,16 +55,16 @@ The following products are available (with their IDs):
 
 The promotion system operates on two distinct levels with a specific application order:
 
-#### Item-Level Promotions
+#### Item level promotions
 - **Applied first** to individual products (Perki vieną, antrą gauni nemokamai - Atsuktuvas)
 - Modify the price of specific items in the cart
 
-#### Cart-Level Promotions  
+#### Cart level promotions  
 - **Applied second** to the entire cart total (10% nuolaida užsakymams virš 75€)
 - Calculate discounts based on the **already discounted** cart total from item-level promotions
 
 
-## Example Usage
+## Example usage
 
 1. **Create a cart:**
    
@@ -82,7 +82,7 @@ The promotion system operates on two distinct levels with a specific application
    
    `GET /cart/1` will show the discount applied.
 
-## API Documentation (Swagger)
+## API documentation (Swagger)
 This project uses Swagger for interactive API documentation.
 
 - After starting the server, visit: `http://localhost:3000/swagger`
