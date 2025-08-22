@@ -5,6 +5,10 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22.11.0",
+    "npm": ">=10.9.0"
+  },
   "scripts": {
     "build": "nest build",
     "start:dev": "docker-compose up -d && npm run migration:run && nest start --watch",
@@ -23,6 +27,7 @@
     "mssql": "^11.0.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
+    "source-map-support": "^0.5.21",
     "typeorm": "^0.3.26"
   },
   "devDependencies": {

@@ -11,7 +11,8 @@ A NestJS backend project for managing a shopping cart with promotions. Includes 
 ## How to start
 
 ### Prerequisites
-- Node.js
+- Node.js 22.11.0 or higher
+- npm 10.9.0 or higher
 - Docker & Docker Compose
 
 ### Setup
