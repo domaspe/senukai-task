@@ -27,8 +27,8 @@ export class PromotionsService {
   async calculatePromotions(cartItems: CartItem[]): Promise<PromotionCalculation> {
     const promotions = await this.promotionRepository.find();
 
-    const itemLevelPromotions = this.promotionStrategyService.getPromotionByLevel(promotions, PromotionLevel.Item);
-    const cartLevelPromotions = this.promotionStrategyService.getPromotionByLevel(promotions, PromotionLevel.Cart);
+    const itemLevelPromotions = this.promotionStrategyService.getPromotionsByLevel(promotions, PromotionLevel.Item);
+    const cartLevelPromotions = this.promotionStrategyService.getPromotionsByLevel(promotions, PromotionLevel.Cart);
 
     const initialDiscountedItems = cartItems.map((item) => ({ ...item }) satisfies DiscountedItem);
 
@@ -55,7 +55,7 @@ export class PromotionsService {
       try {
         const strategy = this.promotionStrategyService.getStrategy(promotion.type);
 
-        if (strategy.isApplicable(currentDiscountedItems, promotion)) {
+        if (strategy.shouldApply(currentDiscountedItems, promotion)) {
           const { discountAmount, discountedItems: modifiedItems } = strategy.apply(currentDiscountedItems, promotion);
 
           if (discountAmount > 0) {
@@ -85,7 +85,7 @@ export class PromotionsService {
       try {
         const strategy = this.promotionStrategyService.getStrategy(promotion.type);
 
-        if (strategy.isApplicable(discountedItems, promotion)) {
+        if (strategy.shouldApply(discountedItems, promotion)) {
           const result = strategy.apply(discountedItems, promotion);
 
           if (result.discountAmount > 0) {

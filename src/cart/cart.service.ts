@@ -1,14 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Product } from '../database/entities/product.entity';
+import { roundMoney } from '../utils';
 import { Repository } from 'typeorm';
-import { Cart } from '../database/entities/cart.entity';
 import { CartItem } from '../database/entities/cart-item.entity';
-import { PromotionsService, PromotionCalculation } from '../promotions/promotions.service';
+import { Cart } from '../database/entities/cart.entity';
+import { PromotionCalculation, PromotionsService } from '../promotions/promotions.service';
 import { AddToCartDto } from './dto/add-to-cart.dto';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
-import { Product } from 'src/database/entities/product.entity';
-import { PromotionLevel } from 'src/database/entities/promotion.entity';
-import { roundMoney } from 'src/utils';
 
 export type CartTotal = Omit<PromotionCalculation, 'itemsAfterItemPromotions'> & {
   items: CartItem[];
@@ -60,7 +59,7 @@ export class CartService {
 
     if (cartItem) {
       cartItem.quantity = quantity;
-      cartItem.totalPrice = cartItem.quantity * cartItem.unitPrice;
+      cartItem.totalPrice = roundMoney(cartItem.quantity * cartItem.unitPrice);
     } else {
       cartItem = this.cartItemRepository.create({
         cartId: cart.id,

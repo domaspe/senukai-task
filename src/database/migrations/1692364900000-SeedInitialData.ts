@@ -14,13 +14,13 @@ export class SeedInitialData1692364900000 implements MigrationInterface {
     `);
 
     await queryRunner.query(`
-      INSERT INTO promotions (name, type, productId, discountValue, minimumOrderValue) VALUES
-      (N'Perki vieną, antrą gauni nemokamai - Atsuktuvas', 'BuyOneGetOne', 2, NULL, NULL)
+      INSERT INTO promotions (name, type, productId, discountValue, minimumOrderValue, buyCount, freeCount) VALUES
+      (N'Perki vieną, antrą gauni nemokamai - Atsuktuvas', 'BuyXGetY', 2, NULL, NULL, 1, 1)
     `);
 
     await queryRunner.query(`
-      INSERT INTO promotions (name, type, productId, discountValue, minimumOrderValue) VALUES
-      (N'10% nuolaida užsakymams virš 75€', 'PercentageDiscount', NULL, 10, 75)
+      INSERT INTO promotions (name, type, productId, discountValue, minimumOrderValue, buyCount, freeCount) VALUES
+      (N'10% nuolaida užsakymams virš 75€', 'PercentageDiscount', NULL, 10, 75, NULL, NULL)
     `);
   }
 

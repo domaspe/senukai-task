@@ -14,6 +14,6 @@ export type PromotionResult = {
 
 export abstract class PromotionStrategy {
   abstract apply(discountedItems: DiscountedItem[], promotion: Promotion): PromotionResult;
-  abstract isApplicable(discountedItems: DiscountedItem[], promotion: Promotion): boolean;
+  abstract shouldApply(discountedItems: DiscountedItem[], promotion: Promotion): boolean;
   abstract level: PromotionLevel;
 }

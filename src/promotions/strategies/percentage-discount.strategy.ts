@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { roundMoney } from 'src/utils';
+import { roundMoney } from '../../utils';
 import { Promotion, PromotionLevel } from '../../database/entities/promotion.entity';
 import { DiscountedItem, PromotionResult, PromotionStrategy } from './promotion-strategy.abstract';
 
@@ -16,7 +16,7 @@ export class PercentageDiscountStrategy extends PromotionStrategy {
     return { discountAmount, discountedItems };
   }
 
-  isApplicable(discountedItems: DiscountedItem[], promotion: Promotion): boolean {
+  shouldApply(discountedItems: DiscountedItem[], promotion: Promotion): boolean {
     const total = discountedItems.reduce((sum, item) => sum + item.totalPrice, 0);
     return total >= (promotion.minimumOrderValue ?? 0);
   }

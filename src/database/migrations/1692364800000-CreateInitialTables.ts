@@ -40,6 +40,8 @@ export class CreateInitialTables1692364800000 implements MigrationInterface {
           productId int NULL,
           discountValue int NULL,
           minimumOrderValue int NULL,
+          buyCount int NULL,
+          freeCount int NULL,
           CONSTRAINT promotions_PK PRIMARY KEY (id)
         )
       `);
@@ -72,7 +74,7 @@ export class CreateInitialTables1692364800000 implements MigrationInterface {
 
     await queryRunner.query(`
       ALTER TABLE promotions ADD CONSTRAINT CK_promotions_type 
-      CHECK (type IN ('BuyOneGetOne', 'PercentageDiscount'))
+      CHECK (type IN ('BuyXGetY', 'PercentageDiscount'))
     `);
   }
 

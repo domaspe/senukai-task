@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum PromotionType {
-  BuyOneGetOne = 'BuyOneGetOne',
+  BuyXGetY = 'BuyXGetY',
   PercentageDiscount = 'PercentageDiscount',
 }
 
@@ -32,4 +32,10 @@ export class Promotion {
 
   @Column({ type: 'int', nullable: true })
   minimumOrderValue?: number;
+
+  @Column({ type: 'int', nullable: true })
+  buyCount?: number;
+
+  @Column({ type: 'int', nullable: true })
+  freeCount?: number;
 }
