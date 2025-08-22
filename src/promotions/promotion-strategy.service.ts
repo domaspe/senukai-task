@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PromotionStrategy } from './strategies/promotion-strategy.abstract';
 import { BuyOneGetOneStrategy } from './strategies/buy-one-get-one.strategy';
 import { PercentageDiscountStrategy } from './strategies/percentage-discount.strategy';
-import { PromotionType } from '../database/entities/promotion.entity';
+import { Promotion, PromotionType, PromotionLevel } from '../database/entities/promotion.entity';
 
 @Injectable()
 export class PromotionStrategyService {
@@ -18,5 +18,12 @@ export class PromotionStrategyService {
       case PromotionType.PercentageDiscount:
         return this.percentageDiscountStrategy;
     }
+  }
+
+  getPromotionByLevel(promotions: Promotion[], level: PromotionLevel): Promotion[] {
+    return promotions.filter((promotion) => {
+      const strategy = this.getStrategy(promotion.type);
+      return strategy.level === level;
+    });
   }
 }

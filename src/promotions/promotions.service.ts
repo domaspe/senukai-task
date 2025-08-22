@@ -27,9 +27,8 @@ export class PromotionsService {
   async calculatePromotions(cartItems: CartItem[]): Promise<PromotionCalculation> {
     const promotions = await this.promotionRepository.find();
 
-    const promotionsByLevel = this.groupPromotionsByLevel(promotions);
-    const itemLevelPromotions = promotionsByLevel.get(PromotionLevel.Item) || [];
-    const cartLevelPromotions = promotionsByLevel.get(PromotionLevel.Cart) || [];
+    const itemLevelPromotions = this.promotionStrategyService.getPromotionByLevel(promotions, PromotionLevel.Item);
+    const cartLevelPromotions = this.promotionStrategyService.getPromotionByLevel(promotions, PromotionLevel.Cart);
 
     const initialDiscountedItems = cartItems.map((item) => ({ ...item }) satisfies DiscountedItem);
 
@@ -43,22 +42,6 @@ export class PromotionsService {
       discountAmount: allAppliedPromotions.reduce((sum, promo) => sum + promo.discountAmount, 0),
       appliedPromotions: allAppliedPromotions,
     };
-  }
-
-  private groupPromotionsByLevel(promotions: Promotion[]): Map<PromotionLevel, Promotion[]> {
-    const grouped = new Map<PromotionLevel, Promotion[]>();
-
-    for (const promotion of promotions) {
-      const strategy = this.promotionStrategyService.getStrategy(promotion.type);
-
-      if (!grouped.has(strategy.level)) {
-        grouped.set(strategy.level, []);
-      }
-
-      grouped.get(strategy.level)!.push(promotion);
-    }
-
-    return grouped;
   }
 
   private applyItemLevelPromotions(
