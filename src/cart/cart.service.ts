@@ -66,7 +66,7 @@ export class CartService {
         productId,
         quantity,
         unitPrice: product.price,
-        totalPrice: quantity * product.price,
+        totalPrice: roundMoney(quantity * product.price),
       });
     }
 

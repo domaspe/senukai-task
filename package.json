@@ -14,7 +14,8 @@
     "start:dev": "docker-compose up -d && npm run migration:run && nest start --watch",
     "migration:run": "npm run db:init && npm run typeorm -- migration:run -d ormconfig.ts",
     "db:init": "ts-node ./init-db.ts",
-    "typeorm": "typeorm-ts-node-commonjs"
+    "typeorm": "typeorm-ts-node-commonjs",
+    "test": "jest"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -32,9 +33,13 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
+    "@nestjs/testing": "^11.1.6",
+    "@types/jest": "^30.0.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "globals": "^16.3.0",
+    "jest": "^30.0.5",
+    "ts-jest": "^29.4.1",
     "typescript-eslint": "^8.40.0"
   }
 }
