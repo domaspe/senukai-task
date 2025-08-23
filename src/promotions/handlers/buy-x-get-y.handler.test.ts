@@ -1,12 +1,12 @@
 import { Promotion, PromotionType } from '../../database/entities/promotion.entity';
-import { BuyXGetYStrategy } from './buy-x-get-y.strategy';
-import { DiscountedItem } from './promotion-strategy.abstract';
+import { BuyXGetYHandler } from './buy-x-get-y.handler';
+import { DiscountedItem } from './promotion-handler.abstract';
 
-describe('BuyXGetYStrategy', () => {
-  let strategy: BuyXGetYStrategy;
+describe('BuyXGetYHandler', () => {
+  let handler: BuyXGetYHandler;
 
   beforeEach(() => {
-    strategy = new BuyXGetYStrategy();
+    handler = new BuyXGetYHandler();
   });
 
   describe('shouldApply', () => {
@@ -21,7 +21,7 @@ describe('BuyXGetYStrategy', () => {
       };
       const discountedItems: DiscountedItem[] = [{ productId: 1, quantity: 3, unitPrice: 10, totalPrice: 30 }];
 
-      expect(strategy.shouldApply(discountedItems, promotion)).toBe(true);
+      expect(handler.shouldApply(discountedItems, promotion)).toBe(true);
     });
 
     it('should return false when target item does not exist', () => {
@@ -35,7 +35,7 @@ describe('BuyXGetYStrategy', () => {
       };
       const discountedItems: DiscountedItem[] = [{ productId: 2, quantity: 5, unitPrice: 10, totalPrice: 50 }];
 
-      expect(strategy.shouldApply(discountedItems, promotion)).toBe(false);
+      expect(handler.shouldApply(discountedItems, promotion)).toBe(false);
     });
 
     it('should return false when target item has insufficient quantity', () => {
@@ -49,7 +49,7 @@ describe('BuyXGetYStrategy', () => {
       };
       const discountedItems: DiscountedItem[] = [{ productId: 1, quantity: 1, unitPrice: 10, totalPrice: 10 }];
 
-      expect(strategy.shouldApply(discountedItems, promotion)).toBe(false);
+      expect(handler.shouldApply(discountedItems, promotion)).toBe(false);
     });
   });
 
@@ -65,7 +65,7 @@ describe('BuyXGetYStrategy', () => {
       };
       const discountedItems: DiscountedItem[] = [{ productId: 2, quantity: 5, unitPrice: 10, totalPrice: 50 }];
 
-      const result = strategy.apply(discountedItems, promotion);
+      const result = handler.apply(discountedItems, promotion);
 
       expect(result.discountAmount).toBe(0);
       expect(result.discountedItems).toEqual(discountedItems);
@@ -82,7 +82,7 @@ describe('BuyXGetYStrategy', () => {
       };
       const discountedItems: DiscountedItem[] = [{ productId: 1, quantity: 2, unitPrice: 10, totalPrice: 20 }];
 
-      const result = strategy.apply(discountedItems, promotion);
+      const result = handler.apply(discountedItems, promotion);
 
       expect(result.discountAmount).toBe(10); // 1 free item * 10 unit price
       expect(result.discountedItems[0].totalPrice).toBe(10); // 20 - 10
@@ -99,7 +99,7 @@ describe('BuyXGetYStrategy', () => {
       };
       const discountedItems: DiscountedItem[] = [{ productId: 1, quantity: 4, unitPrice: 10, totalPrice: 40 }];
 
-      const result = strategy.apply(discountedItems, promotion);
+      const result = handler.apply(discountedItems, promotion);
 
       expect(result.discountAmount).toBe(20); // 2 free items * 10 unit price
       expect(result.discountedItems[0].totalPrice).toBe(20); // 40 - 20
@@ -117,7 +117,7 @@ describe('BuyXGetYStrategy', () => {
 
       const discountedItems: DiscountedItem[] = [{ productId: 1, quantity: 5, unitPrice: 10, totalPrice: 50 }];
 
-      const result = strategy.apply(discountedItems, buyThreeGetTwo);
+      const result = handler.apply(discountedItems, buyThreeGetTwo);
 
       expect(result.discountAmount).toBe(20); // 2 free items * 10 unit price
       expect(result.discountedItems[0].totalPrice).toBe(30); // 50 - 20
@@ -137,7 +137,7 @@ describe('BuyXGetYStrategy', () => {
         { productId: 2, quantity: 2, unitPrice: 15, totalPrice: 30 },
       ];
 
-      const result = strategy.apply(discountedItems, promotion);
+      const result = handler.apply(discountedItems, promotion);
 
       expect(result.discountAmount).toBe(10);
       expect(result.discountedItems[0].totalPrice).toBe(10); // target item discounted

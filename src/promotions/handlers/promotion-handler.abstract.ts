@@ -12,7 +12,7 @@ export type PromotionResult = {
   discountedItems: DiscountedItem[];
 };
 
-export abstract class PromotionStrategy {
+export abstract class PromotionHandler {
   abstract apply(discountedItems: DiscountedItem[], promotion: Promotion): PromotionResult;
   abstract shouldApply(discountedItems: DiscountedItem[], promotion: Promotion): boolean;
   abstract level: PromotionLevel;

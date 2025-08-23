@@ -3,8 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CartItem } from '../database/entities/cart-item.entity';
 import { Promotion, PromotionLevel } from '../database/entities/promotion.entity';
-import { PromotionStrategyService } from './promotion-strategy.service';
-import { DiscountedItem } from './strategies/promotion-strategy.abstract';
+import { PromotionHandlerResolverService } from './promotion-handler-resolver.service';
+import { DiscountedItem } from './handlers/promotion-handler.abstract';
 
 export type PromotionCalculation = {
   discountAmount: number;
@@ -21,14 +21,14 @@ export class PromotionsService {
   constructor(
     @InjectRepository(Promotion)
     private promotionRepository: Repository<Promotion>,
-    private readonly promotionStrategyService: PromotionStrategyService,
+    private readonly handlerResolverService: PromotionHandlerResolverService,
   ) {}
 
   async calculatePromotions(cartItems: CartItem[]): Promise<PromotionCalculation> {
     const promotions = await this.promotionRepository.find();
 
-    const itemLevelPromotions = this.promotionStrategyService.getPromotionsByLevel(promotions, PromotionLevel.Item);
-    const cartLevelPromotions = this.promotionStrategyService.getPromotionsByLevel(promotions, PromotionLevel.Cart);
+    const itemLevelPromotions = this.handlerResolverService.filterPromotionsByLevel(promotions, PromotionLevel.Item);
+    const cartLevelPromotions = this.handlerResolverService.filterPromotionsByLevel(promotions, PromotionLevel.Cart);
 
     const initialDiscountedItems = cartItems.map((item) => ({ ...item }) satisfies DiscountedItem);
 
@@ -53,10 +53,10 @@ export class PromotionsService {
 
     for (const promotion of itemLevelPromotions) {
       try {
-        const strategy = this.promotionStrategyService.getStrategy(promotion.type);
+        const handler = this.handlerResolverService.getPromotionHandler(promotion.type);
 
-        if (strategy.shouldApply(currentDiscountedItems, promotion)) {
-          const { discountAmount, discountedItems: modifiedItems } = strategy.apply(currentDiscountedItems, promotion);
+        if (handler.shouldApply(currentDiscountedItems, promotion)) {
+          const { discountAmount, discountedItems: modifiedItems } = handler.apply(currentDiscountedItems, promotion);
 
           if (discountAmount > 0) {
             appliedPromotions.push({
@@ -83,7 +83,7 @@ export class PromotionsService {
 
     for (const promotion of cartLevelPromotions) {
       try {
-        const strategy = this.promotionStrategyService.getStrategy(promotion.type);
+        const strategy = this.handlerResolverService.getPromotionHandler(promotion.type);
 
         if (strategy.shouldApply(discountedItems, promotion)) {
           const result = strategy.apply(discountedItems, promotion);

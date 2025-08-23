@@ -1,12 +1,12 @@
 import { Promotion, PromotionType } from '../../database/entities/promotion.entity';
-import { PercentageDiscountStrategy } from './percentage-discount.strategy';
-import { DiscountedItem } from './promotion-strategy.abstract';
+import { PercentageDiscountHandler } from './percentage-discount.handler';
+import { DiscountedItem } from './promotion-handler.abstract';
 
-describe('PercentageDiscountStrategy', () => {
-  let strategy: PercentageDiscountStrategy;
+describe('PercentageDiscountHandler', () => {
+  let strategy: PercentageDiscountHandler;
 
   beforeEach(() => {
-    strategy = new PercentageDiscountStrategy();
+    strategy = new PercentageDiscountHandler();
   });
 
   describe('shouldApply', () => {

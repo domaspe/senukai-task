@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { roundMoney } from '../../utils';
 import { Promotion, PromotionLevel } from '../../database/entities/promotion.entity';
-import { DiscountedItem, PromotionResult, PromotionStrategy } from './promotion-strategy.abstract';
+import { DiscountedItem, PromotionResult, PromotionHandler } from './promotion-handler.abstract';
 
 @Injectable()
-export class PercentageDiscountStrategy extends PromotionStrategy {
+export class PercentageDiscountHandler extends PromotionHandler {
   level = PromotionLevel.Cart;
 
   apply(discountedItems: DiscountedItem[], promotion: Promotion): PromotionResult {
