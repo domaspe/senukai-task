@@ -4,7 +4,7 @@ A NestJS backend project for managing a shopping cart with promotions. Includes 
 
 ## Features
 - Cart management (add, update, remove items)
-- Configurable promotion strategies (buy-x-get-y, percentage discount)
+- Configurable promotions (buy-x-get-y, percentage discount)
 - MsSQL database with TypeORM
 - Dockerized for easy setup
 
